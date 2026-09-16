@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Are you smarter than a fruit fly?</title>
+<link rel="stylesheet" href="style.css" />
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.186.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.186.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<header id="app-header">
+  <div class="header-row title-row">
+    <div class="title-block">
+      <h1 class="app-title"><span class="title-text">Are you smarter than a fruit fly?</span> <span class="title-fly" aria-hidden="true">🪰</span></h1>
+      <p class="app-subtitle">Play tic-tac-toe against a simulated real fruit-fly brain: 140,024 neurons, 5.5 million connections, one very small opponent.</p>
+    </div>
+    <div class="header-right">
+      <a id="explain-link" class="explain-link" href="/explain.html" target="_blank" rel="noopener">How does this work? ↗</a>
+      <a id="deck-link" class="explain-link deck-link" href="/explain.html#deck" target="_blank" rel="noopener">Pitch deck ↗</a>
+      <span id="conn-dot" class="conn-dot" title="connection status"></span>
+    </div>
+  </div>
+  <div class="header-row header-controls">
+    <span id="status-line">Loading…</span>
+    <div class="controls">
+      <button id="new-game-btn" class="primary-btn">New game</button>
+      <label class="toggle-switch" title="Fly goes first">
+        <input type="checkbox" id="fly-first-checkbox" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">Fly goes first</span>
+      </label>
+      <button id="mute-btn" class="icon-btn muted" title="Sound effects (muted)">🔇</button>
+    </div>
+  </div>
+  <div class="header-row settings-row">
+    <label class="control-inline">
+      View
+      <select id="view-select">
+        <option value="all">All neurons</option>
+        <option value="inputs">Inputs only</option>
+        <option value="readout">Readout only</option>
+      </select>
+    </label>
+    <label class="control-inline">
+      Glow decay
+      <input type="range" id="decay-slider" min="0.7" max="0.98" step="0.01" value="0.85" />
+    </label>
+    <label class="control-inline">
+      Brightness
+      <input type="range" id="brightness-slider" min="0.2" max="3.0" step="0.05" value="1.4" />
+    </label>
+    <span id="fps-counter" class="fps-counter">-- fps</span>
+  </div>
+</header>
+
+<main id="main-layout">
+  <section id="game-panel" class="panel">
+    <div id="scoreboard" class="scoreboard">
+      <div class="score-item">
+        <span class="score-label">You</span>
+        <span id="score-you" class="score-value">0</span>
+      </div>
+      <div class="score-item score-item-fly">
+        <span id="fly-avatar" class="fly-avatar state-idle" title="the fly">
+          <span class="fly-emoji">🪰</span>
+          <span class="fly-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+        </span>
+        <span id="score-fly" class="score-value">0</span>
+        <span class="score-label">Fly</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Draws</span>
+        <span id="score-draws" class="score-value">0</span>
+      </div>
+    </div>
+    <div id="board-container"></div>
+  </section>
+  <section id="brain-panel" class="panel">
+    <div id="brain-header" class="panel-header">
+      <span>Neural activity</span>
+      <span class="thinking-pulse" aria-hidden="true"></span>
+      <button id="brain-reset-btn" class="icon-btn brain-reset-btn" title="Reset view">⟲ Reset view</button>
+    </div>
+    <div id="brain-container"></div>
+    <div id="brain-legend" class="brain-legend">
+      <span class="legend-chip"><span class="legend-dot legend-dot-input"></span>input (eye)</span>
+      <span class="legend-chip"><span class="legend-dot legend-dot-readout"></span>descending (readout)</span>
+      <span class="legend-chip"><span class="legend-dot legend-dot-spike"></span>spiking</span>
+      <span class="legend-stat">spiking now: <strong id="stat-spiking">0</strong></span>
+      <span class="legend-stat">frames: <strong id="stat-frames">0</strong></span>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

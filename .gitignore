@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+data/raw/
+data/processed/*
+!data/processed/readout.npz
+!data/processed/.gitkeep
+.pytest_cache/
+.DS_Store
+*.log

@@ -1,0 +1,19 @@
+[project]
+name = "fly-tictactoe"
+version = "0.1.0"
+description = "The male fruit fly connectome (Male CNS v1.0) plays tic-tac-toe as a spiking reservoir"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.1",
+    "scipy>=1.14",
+    "pyarrow>=17",
+    "pandas>=2.2",
+    "scikit-learn>=1.5",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

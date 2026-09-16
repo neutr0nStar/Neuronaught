@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How does the fly brain play tic-tac-toe? — Explainer</title>
+<meta name="description" content="How a real fruit fly connectome, simulated as a spiking neural network, is made to play tic-tac-toe." />
+<link rel="stylesheet" href="explain.css" />
+</head>
+<body data-mode="simple">
+
+<header id="topbar">
+  <div class="topbar-inner">
+    <a class="back-link" href="/" id="back-link">← Back to the game</a>
+    <h1 id="page-title">How does the fly brain play tic-tac-toe?</h1>
+    <div class="mode-switch-wrap">
+      <span class="mode-label" data-for="simple">Simple</span>
+      <button id="mode-toggle" class="switch" role="switch" aria-checked="false" aria-label="Toggle between simple and detailed explanations">
+        <span class="switch-knob"></span>
+      </button>
+      <span class="mode-label" data-for="detailed">Detailed</span>
+    </div>
+  </div>
+</header>
+
+<section id="deck" aria-label="Pitch deck: are you smarter than a fruit fly?">
+  <p class="deck-kicker">THE PITCH</p>
+  <div class="deck-shell">
+    <div class="deck-card" id="deck-card" tabindex="0">
+      <div class="deck-track" id="deck-track">
+
+        <article class="slide slide-hero" data-slide="0">
+          <h2 class="slide-headline">Are you smarter than a fruit fly?</h2>
+          <p class="slide-body">A real fly connectome, simulated neuron by neuron on a laptop, looks at your tic-tac-toe board and picks a move.</p>
+          <div class="slide-visual slide-visual-photo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Drosophila_melanogaster_-_side_%28aka%29.jpg" alt="Photograph of an adult Drosophila melanogaster fruit fly in side view" loading="lazy" />
+            <span class="photo-credit">André Karwath (Aka), Wikimedia Commons, CC BY-SA 2.5</span>
+          </div>
+        </article>
+
+        <article class="slide" data-slide="1">
+          <h2 class="slide-headline">A poppy-seed brain that flies</h2>
+          <p class="slide-body">Its whole nervous system runs on about 140,000 neurons. Yours runs on roughly 86 billion. It still flies, navigates, courts, and learns.</p>
+          <div class="slide-visual"><div id="svg-deck-scale-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="2">
+          <h2 class="slide-headline">Scientists mapped every wire</h2>
+          <p class="slide-body">A connectome is a wiring diagram of every neuron and every connection — made by slicing a brain into thousands of ultra-thin layers, imaging each with an electron microscope, then tracing neurons across slices with AI.</p>
+          <div class="slide-visual"><div id="svg-deck-connectome-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="3">
+          <h2 class="slide-headline">Released for everyone to use</h2>
+          <p class="slide-body">Male CNS v1.0 (2025–26): ~166,000 neurons, tens of millions of synapses. Free to use, CC-BY, from HHMI Janelia, Univ. of Cambridge / MRC LMB, and Google Research. Builds on 2024's FlyWire, the female fly brain.</p>
+          <div class="slide-visual"><img src="img/brain_soma_map.png" alt="Two-panel scatter plot of 140,024 neuron soma positions in the Male CNS connectome" loading="lazy" /></div>
+        </article>
+
+        <article class="slide" data-slide="4">
+          <h2 class="slide-headline">Open science, open code</h2>
+          <p class="slide-body">The connectome data is free. The simulation recipe (Shiu et al. 2024, <em>Nature</em>) is published with code. This project is open too — every step below is inspectable.</p>
+          <div class="slide-visual"><div id="svg-deck-pipeline-anchor"></div></div>
+          <p class="slide-cite">Project pipeline: download → build graph → simulate → train readout → serve on the web.</p>
+        </article>
+
+        <article class="slide" data-slide="5">
+          <h2 class="slide-headline">How a neuron works, in one picture</h2>
+          <p class="slide-body">Think of it as a leaky bucket. Input trickles in, some leaks out. When it's full, it fires a pulse — then empties and rests before refilling.</p>
+          <div class="slide-visual"><div id="svg-deck-lif-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="6">
+          <h2 class="slide-headline">Wire up 140,024 buckets</h2>
+          <p class="slide-body">Every connection is a pipe between two buckets. Excitatory pipes add water, inhibitory ones drain it. Pipe width is the number of synapses — 5.5 million pipes in all.</p>
+          <div class="slide-visual"><div id="svg-deck-network-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="7">
+          <h2 class="slide-headline">Show the fly the board</h2>
+          <p class="slide-body">The 3×3 grid lands on the fly's right eye. An X looks like a bright spot, an O like a dark spot — each in its own patch of the eye.</p>
+          <div class="slide-visual"><div id="svg-deck-mapping-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="8">
+          <h2 class="slide-headline">Let the brain run</h2>
+          <p class="slide-body">300 steps of one millisecond each — a third of a second of brain time. About 28,000 neurons fire as activity ripples from the eye into the central brain, and down toward the neurons that move the body.</p>
+          <div class="slide-visual"><div id="svg-deck-storyboard-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="9">
+          <h2 class="slide-headline">Teaching the fly to listen</h2>
+          <p class="slide-body">The wiring never changes. We showed the brain all 4,520 possible board positions, recorded how ~4,000 neurons fired, and fit one simple formula that scores each square from that pattern.</p>
+          <div class="slide-visual"><div id="svg-deck-training-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="10">
+          <h2 class="slide-headline">Every turn, this happens</h2>
+          <p class="slide-body">One click sets off this whole chain, in about 0.4 seconds:</p>
+          <div class="slide-visual"><div id="svg-deck-flow-anchor"></div></div>
+        </article>
+
+        <article class="slide" data-slide="11">
+          <h2 class="slide-headline">How good is it?</h2>
+          <p class="slide-body">It picks the mathematically correct move 84% of the time — a formula that never sees the brain manages only 71%. Against random play it wins or draws 93% of games; against a perfect player it draws about half.</p>
+          <div class="slide-visual"><div id="svg-deck-chart-anchor"></div></div>
+          <p class="slide-cite">Honest footnote: the fly doesn't "know" tic-tac-toe. The readout knows; the brain computes.</p>
+        </article>
+
+        <article class="slide" data-slide="12">
+          <h2 class="slide-headline">Why this matters</h2>
+          <p class="slide-body">Connectomes let scientists test real theories of how brains compute. A fixed biological network already carries useful computation — an idea called reservoir computing. It's a first step from a wiring diagram to a working mind.</p>
+          <div class="slide-visual"><img src="img/brain_soma_map.png" alt="Two-panel scatter plot of 140,024 neuron soma positions in the Male CNS connectome" loading="lazy" /></div>
+        </article>
+
+        <article class="slide slide-hero" data-slide="13">
+          <h2 class="slide-headline">You've seen the wiring. Now play.</h2>
+          <p class="slide-body">You've just watched a real nervous system compute something. Put it to the test.</p>
+          <div class="slide-visual"><div id="svg-deck-closing-anchor"></div></div>
+          <div class="slide-cta">
+            <a class="deck-btn deck-btn-primary" href="/">Go play the fly →</a>
+            <a class="deck-btn deck-btn-secondary" href="#sec-release" id="deck-read-more">Read the full explainer ↓</a>
+          </div>
+          <p class="slide-cite">Sources: Male CNS v1.0 connectome (Janelia FlyEM / Univ. of Cambridge / MRC LMB / Google Research, CC-BY) · Shiu et al. 2024, <em>Nature</em> · full citations below.</p>
+        </article>
+
+      </div>
+
+      <button class="deck-arrow deck-arrow-prev" id="deck-prev" aria-label="Previous slide" type="button">‹</button>
+      <button class="deck-arrow deck-arrow-next" id="deck-next" aria-label="Next slide" type="button">›</button>
+
+      <div class="deck-topbar">
+        <span class="deck-counter" id="deck-counter">1 / 14</span>
+        <button class="deck-fullscreen" id="deck-fullscreen" aria-label="Toggle fullscreen" type="button">⤢</button>
+      </div>
+    </div>
+
+    <div class="deck-dots" id="deck-dots" role="tablist" aria-label="Slide navigation"></div>
+  </div>
+</section>
+
+<div id="layout">
+  <nav id="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#deck">Start here: the pitch</a></li>
+      <li><a href="#sec-release">The connectome release</a></li>
+      <li><a href="#sec-neuron">What happens inside a fly brain</a></li>
+      <li><a href="#sec-pipeline">How this project works</a></li>
+      <li><a href="#sec-training">Teaching the fly</a></li>
+      <li><a href="#sec-viewer">What you're looking at</a></li>
+      <li><a href="#sec-credits">Sources &amp; credits</a></li>
+    </ol>
+  </nav>
+
+  <main id="content">
+
+    <section class="hero">
+      <p class="hero-sub">An explainer for the two-panel demo where a simulated real fruit-fly brain plays tic-tac-toe against you. Flip the switch above for plain-language or full-jargon versions of every section.</p>
+    </section>
+
+    <!-- ================= SECTION 1 ================= -->
+    <section id="sec-release">
+      <h2>1. What did Google (and partners) release?</h2>
+
+      <div class="simple">
+        <p>In late 2025 and 2026, a team of scientists published the most complete map ever made of an animal's nervous system: every single neuron (nerve cell) in the brain and spinal-cord-equivalent of a male fruit fly, and every wire-like connection between them. This kind of map is called a <strong>connectome</strong> — think of it as a wiring diagram of every switch and every wire inside a very small, very intricate machine, except the machine is a living brain and the wires carry electrical pulses instead of current.</p>
+        <p>The map, called the <strong>Male CNS v1.0</strong>, covers roughly <strong>166,000 neurons</strong> and tens of millions of the tiny junctions (synapses) where one neuron passes a signal to the next. It was built by HHMI's Janelia Research Campus, the University of Cambridge, the MRC Laboratory of Molecular Biology, and Google Research, and it's free for anyone to use as long as they give credit (a "CC-BY" license). It's a sequel of sorts to <strong>FlyWire</strong>, a similarly complete map of a <em>female</em> fly's brain published in 2024 — the new map adds the male fly, and adds the nerve cord that runs down the body, not just the brain.</p>
+      </div>
+
+      <div class="detailed">
+        <ul class="fact-list">
+          <li><strong>Male CNS v1.0</strong> — the whole central nervous system (brain + ventral nerve cord, VNC) of an adult male <em>Drosophila melanogaster</em>, reconstructed from a serial electron-microscopy volume at synaptic resolution.</li>
+          <li><strong>~166,691 neurons</strong> traced and annotated into ~11,691 cell types; released as v0.9 (2025-10-05, preprint) and v1.0 (2026-06-08) at <a href="https://male-cns.janelia.org" target="_blank" rel="noopener">male-cns.janelia.org</a>, license CC-BY.</li>
+          <li>Produced by HHMI Janelia FlyEM, University of Cambridge (Dept. of Zoology), the MRC Laboratory of Molecular Biology, and Google Research.</li>
+          <li>Of those neurons, <strong>140,024</strong> have a usable soma (cell body) position in the data release we use here; after thresholding at ≥5 synapses per ordered neuron pair, that graph has <strong>5,536,352</strong> directed, signed connections — the weight matrix this whole project runs on.</li>
+          <li>Relation to <strong>FlyWire</strong> (Dorkenwald, Schlegel, et al., <em>Nature</em>, Oct 2024): a synaptic-resolution map of the <em>whole brain</em> (not VNC) of an adult <em>female</em> fly, ~139,255 neurons, CC-BY-NC. Male CNS extends the same effort to the other sex and the full CNS, enabling the first sex-by-sex circuit comparison at synaptic resolution (the release paper reports 114 dimorphic cell types out of 7,319 cross-matched central-brain types).</li>
+        </ul>
+        <p><strong>What "connectome" means precisely here:</strong> a directed, weighted multigraph. Nodes are neurons (each with a reconstructed 3D shape and a soma position). Edges are aggregated synaptic connections: for every ordered pair (A → B) with at least one synapse, the edge weight is the number of synapses from A onto B. Each neuron/synapse also carries a <strong>predicted neurotransmitter</strong> (acetylcholine, glutamate, GABA, dopamine, octopamine, serotonin, histamine, …), inferred by a machine-learning classifier trained on EM ultrastructure — this is what lets a purely anatomical wiring diagram be turned into a signed (excitatory/inhibitory) network for simulation.</p>
+      </div>
+
+      <figure class="photo-row">
+        <div class="photo-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Drosophila_melanogaster_-_side_%28aka%29.jpg" alt="Photograph of an adult Drosophila melanogaster fruit fly in side view" loading="lazy" />
+          <figcaption>Adult <em>Drosophila melanogaster</em>. Photo: André Karwath (Aka), <a href="https://commons.wikimedia.org/wiki/File:Drosophila_melanogaster_-_side_(aka).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA 2.5.</figcaption>
+        </div>
+      </figure>
+    </section>
+
+    <!-- ================= SECTION 2 ================= -->
+    <section id="sec-neuron">
+      <h2>2. What happens inside a fly brain</h2>
+
+      <div class="simple">
+        <p>Every neuron is like a tiny leaky rechargeable battery with a hair-trigger. It constantly receives little charges ("pings") from the other neurons wired up to it. If the pings raise its charge enough, above a threshold, it "fires" — sends its own ping down its own wires to whoever it's connected to — and then almost instantly discharges back to nearly empty and takes a very short breather before it's allowed to fire again. If pings don't keep arriving, the charge slowly leaks away on its own. That's it: charge in, leak, threshold, fire, reset, repeat, ten thousand times a second across a hundred thousand neurons at once. Out of that simple rule, in a real brain, thought, sight, and movement emerge.</p>
+      </div>
+
+      <div class="detailed">
+        <p>Each neuron is modeled as a single-compartment <strong>leaky integrate-and-fire (LIF)</strong> unit, using the exact constants fit to the fly connectome by Shiu et al. 2024 (<em>Nature</em>, "A Drosophila computational brain model reveals sensorimotor processing"; code: <a href="https://github.com/philshiu/Drosophila_brain_model" target="_blank" rel="noopener">github.com/philshiu/Drosophila_brain_model</a>).</p>
+
+        <div class="eqn-block" aria-label="Leaky integrate-and-fire equations">
+          <div class="eqn">d<i>v</i>/d<i>t</i> = (<i>v</i><sub>rest</sub> − <i>v</i> + <i>g</i>) / τ<sub>mem</sub></div>
+          <div class="eqn">d<i>g</i>/d<i>t</i> = − <i>g</i> / τ<sub>syn</sub></div>
+          <div class="eqn">on spike arrival: <i>g</i> ← <i>g</i> + <i>w</i></div>
+          <div class="eqn">if <i>v</i> ≥ <i>v</i><sub>thresh</sub>: emit spike, <i>v</i> ← <i>v</i><sub>reset</sub>, then refractory for <i>t</i><sub>ref</sub></div>
+        </div>
+
+        <ul class="fact-list">
+          <li><i>v</i> is the membrane potential; <i>g</i> is a synaptic drive variable that decays on its own and is kicked up by incoming spikes.</li>
+          <li><i>v</i><sub>thresh</sub> = −45 mV, <i>v</i><sub>reset</sub> = −52 mV, τ<sub>mem</sub> = 20 ms, τ<sub>syn</sub> = 5 ms, <i>t</i><sub>ref</sub> = 2.2 ms.</li>
+          <li>Synaptic weight <i>w</i> = 0.275 mV × (number of synapses in that connection), with a <strong>sign</strong> set by the predicted neurotransmitter: acetylcholine (ACh), dopamine (DA), octopamine (OA) and serotonin (5-HT) are treated as excitatory (+); GABA, glutamate, and histamine are treated as inhibitory (−).</li>
+          <li>The simulation here integrates this with a fixed step (see next section) rather than an event-driven solver, and drops axonal/synaptic conduction delays for speed.</li>
+        </ul>
+      </div>
+
+      <figure class="diagram-figure">
+        <div id="svg-lif-anchor"></div>
+        <figcaption>A single LIF neuron: membrane voltage rises toward threshold as input arrives, spikes on crossing −45 mV, resets to −52 mV, and sits refractory before it can charge again. Diagram made for this project; parameters from Shiu et al. 2024, <a href="https://www.nature.com/articles/s41586-024-07763-9" target="_blank" rel="noopener"><em>Nature</em></a>.</figcaption>
+      </figure>
+      <figure class="photo-row">
+        <div class="photo-card">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Complete_neuron_cell_diagram_en.svg" alt="Labeled diagram of a generic vertebrate-style neuron and its parts" loading="lazy" />
+          <figcaption>A labeled neuron diagram (illustrative; a fly's spiking LIF units abstract away most of this cellular detail). LadyofHats, <a href="https://commons.wikimedia.org/wiki/File:Complete_neuron_cell_diagram_en.svg" target="_blank" rel="noopener">Wikimedia Commons</a>, public domain.</figcaption>
+        </div>
+      </figure>
+    </section>
+
+    <!-- ================= SECTION 3 ================= -->
+    <section id="sec-pipeline">
+      <h2>3. How this project works</h2>
+
+      <div class="simple">
+        <p>Here's the whole trip from your click to the fly's move:</p>
+        <ol class="pipeline-steps">
+          <li><strong>Download the map.</strong> Get the real wiring diagram of the fly's whole nervous system.</li>
+          <li><strong>Build a wired-up model.</strong> Turn that map into a giant network of tiny simulated neurons that can excite or quiet each other down, matching the real wiring, in the right direction, with the right strength.</li>
+          <li><strong>Show the fly the board.</strong> Project the 3×3 grid onto the part of the model that stands in for the fly's right eye: an X lights up like a bright dot, an O like a dark dot, each in its own patch of "vision".</li>
+          <li><strong>Let the brain run.</strong> Simulate the whole network for a third of a second of brain time (about 0.4 real seconds on a laptop) and watch which neurons fire.</li>
+          <li><strong>Listen to a few thousand neurons.</strong> Count how often each of a few thousand especially board-sensitive neurons fired.</li>
+          <li><strong>Turn that into a move.</strong> A simple, separately trained scoring formula turns those counts into a score for each of the 9 squares; the fly plays the empty square with the highest score.</li>
+        </ol>
+        <p>The important thing: steps 1–4 use the <em>real</em> fly wiring and real nerve-cell behavior, untouched. Only step 6 — the scoring formula — is something we trained specifically to play this game.</p>
+      </div>
+
+      <div class="detailed">
+        <ol class="pipeline-steps">
+          <li><strong>Download</strong> the Male CNS v1.0 connectome tables (neurons, synapses, neurotransmitter predictions, soma/hex-column coordinates) from the public GCS bucket.</li>
+          <li><strong>Build a signed weight matrix</strong>: 140,024 neurons × 140,024 neurons, sparse, 5,536,352 directed connections kept at a ≥5-synapse threshold per ordered pair; weight = 0.275 mV × synapse count × neurotransmitter sign (see §2).</li>
+          <li><strong>The fly "sees" the board</strong> on its right eye: the 3×3 grid is mapped onto a 3×3 patch of the eye's hexagonal retinotopic columns, using each optic-lobe neuron's known hex1/hex2 column address. An <strong>X</strong> drives the ON pathway in that column (cell types L1, L3, Mi1, Tm3 — "a bright spot"); an <strong>O</strong> drives the OFF pathway (L2, L5, Tm1, Tm2 — "a dark spot"). Driven neurons receive a constant 22 mV input current, calibrated (see §2's LIF equations) to produce ≈100 Hz firing in isolation.</li>
+          <li><strong>Simulate the whole brain</strong> for <strong>300 steps of 1 ms</strong> (300 ms of simulated brain time), roughly 0.4 s wall-clock on an Apple M4 laptop, using a sparse column-gather LIF update.</li>
+          <li><strong>Feature extraction</strong>: spike counts, over the full 300 ms, of a fixed set of <strong>4,000</strong> neurons pre-selected as the most board-sensitive (highest spike-count variance across a sample of boards, excluding the input neurons themselves) form a feature vector per board.</li>
+          <li><strong>Readout</strong>: a trained linear ridge-regression head maps <code>log1p(counts)</code> (standardized) of those 4,000 neurons to 9 move scores; occupied cells are masked out and the fly plays <code>argmax</code> of the rest.</li>
+        </ol>
+
+        <h3 class="sub-h">Real vs. engineered</h3>
+        <div class="split-cols">
+          <div class="col real">
+            <h4>Real</h4>
+            <ul>
+              <li>The full wiring: 140,024 neurons, 5.5M signed synaptic connections.</li>
+              <li>Every neuron's real soma position (used for the 3D viewer).</li>
+              <li>Every connection's sign, from the ML-predicted neurotransmitter.</li>
+              <li>LIF dynamics and constants, from Shiu et al. 2024's fit to this connectome.</li>
+              <li>The retinotopic hex-column addresses used to place the board on the eye.</li>
+            </ul>
+          </div>
+          <div class="col engineered">
+            <h4>Engineered</h4>
+            <ul>
+              <li>A global synaptic gain of <strong>2×</strong>. At the literature's gain of 1, driven visual neurons excite GABAergic Pm interneurons that silence them within two synaptic hops, and activity never reaches the central brain.</li>
+              <li>Synaptic conduction delays are dropped (treated as instantaneous).</li>
+              <li>A coarse 1 ms integration step (Shiu et al. used 0.1 ms).</li>
+              <li>The readout itself: a ridge-regression head trained purely to play tic-tac-toe well, layered on top of the untouched biological network.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <figure class="diagram-figure">
+        <div id="svg-mapping-anchor"></div>
+        <figcaption>The 3×3 tic-tac-toe board mapped onto a 3×3 patch of hexagonal columns in the fly's right eye. Each board cell corresponds to one retinotopic column; X and O drive different cell types within that column. Diagram made for this project from the pipeline's own board→eye mapping.</figcaption>
+      </figure>
+
+      <figure class="diagram-figure">
+        <div id="svg-pipeline-anchor"></div>
+        <figcaption>The full pipeline: board → fly's eye → whole-brain spiking simulation → 4,000-neuron feature readout → move. Diagram made for this project.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= SECTION 4 ================= -->
+    <section id="sec-training">
+      <h2>4. Teaching the fly</h2>
+
+      <div class="simple">
+        <p>Here's the trick, and it's called <strong>reservoir computing</strong>: instead of training the brain itself (which we never touch), we treat the whole enormously complicated, fixed brain as a kind of echo chamber. Whatever pattern of light we shine into it (the board), it produces a rich, complicated, but <em>fixed and repeatable</em> pattern of echoes (which neurons fire, and how often). We don't rearrange a single wire in that echo chamber. All the learning happens in a separate, tiny, dumb step afterward: we learn how to <em>listen</em> to the echoes — which few thousand echo-points to pay attention to, and how to weigh them — to guess the best move.</p>
+        <p>We taught that "listening" step using every possible tic-tac-toe position and the mathematically correct best move in each one. The result plays very well against a random opponent (wins or draws almost every time) and holds its own against a perfect player, drawing about half the time. But be honest with yourself about what's happening: <strong>the fly does not know the rules of tic-tac-toe.</strong> The "knowing" lives entirely in that small trained listening step. The brain's only contribution is turning a simple visual pattern into a rich, scrambled, but structured signal that happens to make good moves easier to pick out — exactly the kind of shortcut reservoir computing is built around.</p>
+      </div>
+
+      <div class="detailed">
+        <p>This is a classic <strong>reservoir computing</strong> setup: a large, fixed, nonlinear recurrent dynamical system (here, the literal biological connectome run as a spiking network) serves as a high-dimensional random-ish feature expansion; only a linear readout on top of it is trained.</p>
+        <ul class="fact-list">
+          <li><strong>Readout</strong>: ridge regression (scikit-learn <code>RidgeCV</code>, 5-fold CV over 13 log-spaced alphas from 10⁻² to 10⁴; chosen α = 1000).</li>
+          <li><strong>Targets</strong>: per-cell minimax <em>Q</em>-values for the player to move (+1 leads to a forced win, 0 a draw, −1 a loss; illegal cells −1), computed by exhaustive minimax over all <strong>4,520</strong> non-terminal tic-tac-toe boards (every reachable non-terminal state under alternating legal play).</li>
+          <li><strong>Feature ablation</strong> (held-out optimal-move rate, 80/20 split): using the wide 4,000-neuron feature set scores <strong>0.836</strong>; a linear model trained directly on the raw 27-dim one-hot board (no brain at all) scores only <strong>0.709</strong>; using only the 1,308 descending neurons (the brain's actual motor-command output population) scores <strong>0.69</strong>. The gap between 0.836 and 0.709 is the brain doing real, useful nonlinear computation — the reservoir make the classes more linearly separable than the raw board is.</li>
+          <li><strong>Play record</strong>: against a uniformly random opponent, the trained readout wins or draws about <strong>93%</strong> of games (both sides, ~200 games/side). Against a perfect minimax opponent (both sides, ~20 games/side) it draws roughly half its games and otherwise loses — it never manufactures a win against perfect play, as expected, but also rarely blunders into a loss.</li>
+        </ul>
+        <p class="caveat"><strong>Caveat, stated plainly:</strong> a fly brain has no representation of "tic-tac-toe." All task-specific knowledge lives in the trained linear readout's weights. The connectome's contribution is a fixed, biologically real nonlinear transform of the visual input into a high-dimensional spike-count code — useful because it is fixed, complex, and (thanks to real inhibitory/excitatory structure) not simply linear in the input, which is exactly what lets a linear readout do more than a linear readout on the raw pixels could.</p>
+        <p>This approach follows in spirit (though independently) from "<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12109256/" target="_blank" rel="noopener">The Drosophila Connectome as a Computational Reservoir for Time-Series Prediction</a>" and the general <code>conn2res</code> connectome-reservoir-computing toolbox, and follows a small but growing community of connectome hobby projects (see <a href="https://github.com/cobanov/awesome-fly" target="_blank" rel="noopener">cobanov/awesome-fly</a> and <a href="https://github.com/pikabell/fly-tictactoe" target="_blank" rel="noopener">pikabell/fly-tictactoe</a>).</p>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 5 ================= -->
+    <section id="sec-viewer">
+      <h2>5. What you're looking at in the right-hand panel</h2>
+
+      <div class="simple">
+        <p>Every dot in the 3D view is one real neuron, sitting exactly where its cell body actually sits inside the fly's head. When a dot briefly flashes bright, that neuron just fired. Teal dots are the "eye" neurons currently seeing your move; amber dots are the "output" neurons whose firing gets read out to choose the fly's move. During a typical move, roughly <strong>one in five</strong> of all the neurons fire at least once — the rest stay quiet.</p>
+      </div>
+
+      <div class="detailed">
+        <p>The point cloud plots all 140,024 neurons at their real soma <i>(x, y, z)</i> positions from the connectome. The server streams one spike frame every <code>FRAME_EVERY = 10</code> ms of simulated time, so a 300 ms move produces <strong>30 frames</strong>; each frame is the (binary, WebSocket) list of neuron indices that spiked in that 10 ms bin. The client accumulates a per-neuron "activity" value that jumps to 1 on a spike and exponentially decays (the Glow decay slider) between frames, so recent spikes glow and fade rather than blinking on/off.</p>
+        <ul class="fact-list">
+          <li>Teal = the specific input group currently driven by the board (the visual neurons for whichever cells hold an X or O).</li>
+          <li>Amber = currently spiking, regardless of class.</li>
+          <li>At the tuned operating point (global gain 2, no bias current), about <strong>20%</strong> of all neurons and roughly 550 of the 1,308 descending neurons are active over the course of a move, at a mean population rate around 14 Hz — moderate, clearly board-dependent activity rather than either silence or saturation.</li>
+        </ul>
+      </div>
+      <figure class="data-figure">
+        <img src="img/brain_soma_map.png" alt="Two-panel scatter plot of 140,024 neuron soma positions in the Male CNS connectome, colored by cell class, with input and readout neurons highlighted" loading="lazy" />
+        <figcaption>Soma positions of the 140,024 neurons used, colored by class; teal marks the eye ("input") neurons, amber the descending ("readout") neurons. Data: Male CNS v1.0 (Janelia FlyEM / Univ. of Cambridge / MRC LMB / Google Research), CC-BY. Rendered by this project.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= SECTION 6 ================= -->
+    <section id="sec-credits">
+      <h2>6. Sources &amp; credits</h2>
+
+      <div class="credits-grid">
+        <div>
+          <h3>Text sources</h3>
+          <ul class="link-list">
+            <li><a href="https://male-cns.janelia.org" target="_blank" rel="noopener">Male CNS v1.0 connectome</a> — Janelia FlyEM / Univ. of Cambridge / MRC LMB / Google Research. CC-BY.</li>
+            <li><a href="https://www.janelia.org/news/researchers-reveal-connectome-of-the-male-fruit-fly-central-nervous-system" target="_blank" rel="noopener">Janelia news release</a> on the Male CNS connectome.</li>
+            <li><a href="https://mrclmb.ac.uk/news-events/articles/first-complete-connectome-of-male-fly-central-nervous-system-allows-for-unprecedented-male-female-brain-comparison/" target="_blank" rel="noopener">MRC LMB news release</a> on the male/female comparison.</li>
+            <li>Preprint: <em>Male CNS connectome</em>, bioRxiv doi:10.1101/2025.10.09.680999.</li>
+            <li><a href="https://www.nature.com/articles/s41586-024-07686-5" target="_blank" rel="noopener">Schlegel, Dorkenwald, et al., "Whole-brain annotation and multi-connectome cell typing of Drosophila," Nature (2024)</a> and the <a href="https://flywire.ai" target="_blank" rel="noopener">FlyWire</a> project (female brain). CC-BY-NC.</li>
+            <li><a href="https://www.nature.com/articles/s41586-024-07763-9" target="_blank" rel="noopener">Shiu et al., "A Drosophila computational brain model reveals sensorimotor processing," Nature (2024)</a> — source of the LIF parameters used here. Code: <a href="https://github.com/philshiu/Drosophila_brain_model" target="_blank" rel="noopener">philshiu/Drosophila_brain_model</a>.</li>
+            <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12109256/" target="_blank" rel="noopener">"The Drosophila Connectome as a Computational Reservoir for Time-Series Prediction"</a> — related reservoir-computing-on-connectome work.</li>
+            <li><a href="https://github.com/cobanov/awesome-fly" target="_blank" rel="noopener">cobanov/awesome-fly</a> and <a href="https://github.com/pikabell/fly-tictactoe" target="_blank" rel="noopener">pikabell/fly-tictactoe</a> — community connectome hobby projects.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Image sources</h3>
+          <ul class="link-list">
+            <li><strong>Soma position map</strong> (below) — rendered for this project directly from <code>data/processed/neurons.npz</code> and <code>io_groups.npz</code>. Underlying data: Male CNS v1.0, CC-BY.</li>
+            <li>Fly photo — "Drosophila melanogaster - side (aka).jpg" by <a href="https://commons.wikimedia.org/wiki/User:Aka" target="_blank" rel="noopener">André Karwath (Aka)</a>, via <a href="https://commons.wikimedia.org/wiki/File:Drosophila_melanogaster_-_side_(aka).jpg" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA 2.5.</li>
+            <li>Neuron diagram — "Complete neuron cell diagram en.svg" by <a href="https://commons.wikimedia.org/wiki/User:LadyofHats" target="_blank" rel="noopener">LadyofHats</a>, via <a href="https://commons.wikimedia.org/wiki/File:Complete_neuron_cell_diagram_en.svg" target="_blank" rel="noopener">Wikimedia Commons</a>, public domain.</li>
+            <li>Pipeline, LIF-neuron, and board-to-eye diagrams — original inline SVGs made for this page.</li>
+          </ul>
+        </div>
+      </div>
+
+
+
+      <p class="license-note">License notes: Male CNS v1.0 data is CC-BY (attribution required, commercial use allowed). FlyWire data is CC-BY-NC (non-commercial only) — not used directly by this project, cited here for context only. The Shiu et al. 2024 LIF model code is available at the repository linked above; check that repository for its own license terms before reuse.</p>
+    </section>
+
+    <footer id="page-footer">
+      <a class="back-link" href="/" id="back-link-bottom">← Back to the game</a>
+    </footer>
+  </main>
+</div>
+
+<script src="explain.js"></script>
+</body>
+</html>
