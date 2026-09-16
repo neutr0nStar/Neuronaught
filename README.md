@@ -11,6 +11,10 @@ its 140,024 neurons fire in a live, rotatable 3D brain.
 
 *Mid-game. Left: you are X. Right: every dot is one real neuron at its real position; white dots are spiking right now. Open `http://127.0.0.1:8000/?demo=1` to watch the fly play itself.*
 
+![One turn: the human plays X, the whole brain lights up while the fly thinks for 300 ms of brain time, then the fly plays O](docs/img/demo.gif)
+
+*One turn, real time. The flash is ~28,000 neurons spiking as activity spreads from the eye through the brain.*
+
 ## How it works, in 6 lines
 
 1. Your tic-tac-toe board...
