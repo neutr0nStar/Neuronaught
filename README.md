@@ -7,10 +7,6 @@ the University of Cambridge, and Google Research — simulated neuron by neuron
 on a laptop. Show it a tic-tac-toe board and it picks a move, while you watch
 its 140,024 neurons fire in a live, rotatable 3D brain.
 
-![Neuronaught mid-game: the board on the left, 27,561 neurons spiking in the 3D brain on the right](docs/img/screenshot.png)
-
-*Mid-game. Left: you are X. Right: every dot is one real neuron at its real position; white dots are spiking right now. Open `http://127.0.0.1:8000/?demo=1` to watch the fly play itself.*
-
 ![One turn: the human plays X, the whole brain lights up while the fly thinks for 300 ms of brain time, then the fly plays O](docs/img/demo.gif)
 
 *One turn, real time. The flash is ~28,000 neurons spiking as activity spreads from the eye through the brain.*
