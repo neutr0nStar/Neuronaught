@@ -6,6 +6,10 @@ import { Brain } from './brain.js';
 
 const params = new URLSearchParams(location.search);
 const MOCK = params.get('mock') === '1';
+// ?demo=1 auto-plays the human side (for screenshots / kiosk display).
+const DEMO = params.get('demo') === '1';
+const DEMO_MOVES = [4, 0, 8, 2, 6, 1, 3, 5, 7];
+let demoTimer = null;
 
 const statusEl = document.getElementById('status-line');
 const newGameBtn = document.getElementById('new-game-btn');
@@ -114,6 +118,7 @@ function applyState(state) {
   setStatus(statusText(state));
   brainHeader.classList.toggle('thinking', !!state.thinking);
   if (brainPanel) brainPanel.classList.toggle('thinking', !!state.thinking);
+  if (DEMO) scheduleDemoMove(state);
 
   if (isEmptyBoard(state.board)) {
     scoredThisGame = false;
@@ -198,6 +203,16 @@ async function boot() {
 
   if (MOCK) startMock();
   else connectWS();
+}
+
+function scheduleDemoMove(state) {
+  clearTimeout(demoTimer);
+  const humanTurn = (state.status === 'x_to_move' && state.human === 1) ||
+                    (state.status === 'o_to_move' && state.human === 2);
+  if (!humanTurn || state.thinking) return;
+  const cell = DEMO_MOVES.find((c) => state.board[c] === 0);
+  if (cell === undefined) return;
+  demoTimer = setTimeout(() => onHumanMove(cell), 2500);
 }
 
 function onHumanMove(cell) {
