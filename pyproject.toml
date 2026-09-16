@@ -1,5 +1,5 @@
 [project]
-name = "fly-tictactoe"
+name = "neuronaught"
 version = "0.1.0"
 description = "The male fruit fly connectome (Male CNS v1.0) plays tic-tac-toe as a spiking reservoir"
 requires-python = ">=3.12"

@@ -1,4 +1,6 @@
-# Are you smarter than a fruit fly? 🪰
+# Neuronaught 🪰
+
+**Are you smarter than a fruit fly?** *Neuron* + *naughts and crosses*.
 
 A real fruit-fly connectome — the **Male CNS v1.0**, released by Janelia FlyEM,
 the University of Cambridge, and Google Research — simulated neuron by neuron
@@ -23,26 +25,58 @@ its 140,024 neurons fire in a live, rotatable 3D brain.
 - Engineered: a global synaptic gain of 2x (at the literature's gain of 1, activity dies out within two synaptic hops — see `docs/TUNING.md`), a coarser 1 ms integration step, and dropped synaptic delays.
 - Engineered: the move itself is a linear readout trained purely to play tic-tac-toe, layered on top of the untouched biological network.
 
-## Quickstart
+## Run it locally
 
-Prerequisites: macOS or Linux, Python 3.12 via [uv](https://docs.astral.sh/uv/), ~600 MB free for the connectome download, 16 GB RAM.
+Prerequisites: macOS or Linux, [uv](https://docs.astral.sh/uv/) (it installs
+Python 3.12 for you), ~600 MB of disk for the connectome download, 16 GB RAM.
+Tested on an Apple M4 MacBook.
 
 ```bash
+git clone https://github.com/<you>/neuronaught.git && cd neuronaught
 uv venv --python 3.12 && uv pip install -e .
-uv run python scripts/00_download.py        # ~560 MB from the public GCS bucket
-uv run python scripts/01_build_graph.py     # -> data/processed/graph.npz, neurons.npz
-uv run python scripts/02_pick_io.py         # -> io_groups.npz (input + readout neurons)
-uv run python -u scripts/03_train_readout.py   # ~15 min on an M4 -> readout.npz
+uv run python scripts/00_download.py        # 3 files, ~560 MB, public bucket, no account needed
+uv run python scripts/01_build_graph.py     # ~3 s  -> data/processed/graph.npz, neurons.npz
+uv run python scripts/02_pick_io.py         # <1 s  -> data/processed/io_groups.npz
 uv run uvicorn fly.server:app --port 8000   # open http://127.0.0.1:8000
 ```
 
-A trained readout is already included at `data/processed/readout.npz`, so you
-can skip the training step and jump straight to playing.
+That is all you need to play. The three build steps turn the downloaded
+connectome into the simulation graph, the neuron positions for the 3D view,
+and the eye/readout neuron groups. They are deterministic and take seconds.
 
-`uv run pytest` runs the unit tests. `FLY_FAKE_SIM=1` runs the server with a
-fake reservoir (no connectome or trained readout needed), and
-`http://127.0.0.1:8000/?mock=1` runs the page with no backend at all — both
-are for testing without the real data.
+### Using the trained fly (included)
+
+The trained readout ships in this repo as `data/processed/readout.npz`
+(208 KB): the ridge weights for the 4,000 readout neurons, their
+normalisation, the neuron indices, and the simulation settings it was trained
+with (300 steps, 1 ms, gain 2, drive 22 mV). The server loads it at startup
+and prints `trained=True`. The connectome itself is not in the repo (it is
+560 MB and CC-BY from Janelia), which is why the download and build steps
+above are still required. You can inspect it with:
+
+```bash
+uv run python -c "import numpy as np; d=np.load('data/processed/readout.npz'); print({k: d[k].shape for k in d.files})"
+```
+
+### Retraining the fly (optional, ~15 min)
+
+```bash
+uv run python -u scripts/03_train_readout.py          # -u so progress lines are not buffered
+uv run python -u scripts/03_train_readout.py --regen  # discard cached features and resimulate
+```
+
+Training simulates all 4,520 non-terminal boards on 6 processes (~12 min),
+caches spike counts in `data/processed/features.npz`, fits ridge readouts,
+prints held-out accuracy, overwrites `readout.npz`, then plays 440 evaluation
+games. If the server is running it picks up the new readout on the next move.
+Simulation settings live in `fly/config.py`; see `docs/TUNING.md` before
+changing them, because the readout must be retrained after any change.
+
+### Testing without the data
+
+`uv run pytest` runs the unit tests. `FLY_FAKE_SIM=1 uv run uvicorn fly.server:app`
+serves the UI with a fake reservoir, and `http://127.0.0.1:8000/?mock=1` runs
+the page with no backend at all.
 
 ## Results
 
